@@ -4874,6 +4874,15 @@ var author$project$Main$stars = function (rating) {
 };
 var elm$html$Html$button = _VirtualDom_node('button');
 var elm$html$Html$div = _VirtualDom_node('div');
+var elm$json$Json$Encode$string = _Json_wrap;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -4894,13 +4903,17 @@ var elm$html$Html$Events$onClick = function (msg) {
 var author$project$Main$view = function (model) {
 	return A2(
 		elm$html$Html$div,
-		_List_Nil,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('main')
+			]),
 		_List_fromArray(
 			[
 				A2(
 				elm$html$Html$button,
 				_List_fromArray(
 					[
+						elm$html$Html$Attributes$class('increase'),
 						elm$html$Html$Events$onClick(author$project$Main$Increase)
 					]),
 				_List_fromArray(
@@ -4911,6 +4924,7 @@ var author$project$Main$view = function (model) {
 				elm$html$Html$button,
 				_List_fromArray(
 					[
+						elm$html$Html$Attributes$class('decrease'),
 						elm$html$Html$Events$onClick(author$project$Main$Decrease)
 					]),
 				_List_fromArray(
@@ -4919,7 +4933,10 @@ var author$project$Main$view = function (model) {
 					])),
 				A2(
 				elm$html$Html$div,
-				_List_Nil,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('starrating')
+					]),
 				_List_fromArray(
 					[
 						author$project$Main$stars(model)

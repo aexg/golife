@@ -2,6 +2,7 @@ module Main exposing (Model, Msg(..), main, stars, update, view)
 
 import Browser
 import Html
+import Html.Attributes exposing (class)
 import Html.Events
 
 
@@ -20,10 +21,10 @@ stars rating =
 
 
 view model =
-    Html.div []
-        [ Html.button [ Html.Events.onClick Increase ] [ Html.text "Increase" ]
-        , Html.button [ Html.Events.onClick Decrease ] [ Html.text "Decrease" ]
-        , Html.div [] [ stars model ]
+    Html.div [ class "main" ]
+        [ Html.button [ class "increase", Html.Events.onClick Increase ] [ Html.text "Increase" ]
+        , Html.button [ class "decrease", Html.Events.onClick Decrease ] [ Html.text "Decrease" ]
+        , Html.div [ class "starrating" ] [ stars model ]
         ]
 
 
