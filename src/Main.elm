@@ -1,50 +1,125 @@
-module Main exposing (Model, Msg(..), main, stars, update, view)
+module Main exposing (Model, Msg(..), Validation(..), main, model, update, validate, view, viewValidation)
 
 import Browser
-import Html
-import Html.Attributes exposing (class)
-import Html.Events
-
-
-type alias Model =
-    Int
-
-
-type Msg
-    = Increase
-    | Decrease
-
-
-stars : Int -> Html.Html msg
-stars rating =
-    (String.repeat rating "★" ++ String.repeat (5 - rating) "☆") |> Html.text
-
-
-view model =
-    Html.div [ class "main" ]
-        [ Html.button [ class "increase", Html.Events.onClick Increase ] [ Html.text "Increase" ]
-        , Html.button [ class "decrease", Html.Events.onClick Decrease ] [ Html.text "Decrease" ]
-        , Html.div [ class "starrating" ] [ stars model ]
-        ]
-
-
-update : Msg -> Model -> Model
-update msg model =
-    case msg of
-        Increase ->
-            if model == 5 then
-                model
-
-            else
-                model + 1
-
-        Decrease ->
-            if model == 1 then
-                model
-
-            else
-                model - 1
+import Char exposing (isDigit, isLower, isUpper)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
+import String
 
 
 main =
-    Browser.sandbox { init = 1, view = view, update = update }
+    Browser.sandbox { init = init, update = update, view = view }
+
+
+type Validation
+    = None
+    | Ok
+    | Error String
+
+
+type alias Model =
+    { name : String
+    , password : String
+    , pwAgain : String
+    , age : String
+    , valid : Validation
+    }
+
+
+model : Model
+model =
+    { name = ""
+    , password = ""
+    , pwAgain = ""
+    , age = ""
+    , valid = None
+    }
+
+
+init : Model
+init =
+    Model "" "" "" "" None
+
+
+type Msg
+    = Name String
+    | Password String
+    | PwAgain String
+    | Age String
+    | Check
+
+
+update : Msg -> Model -> Model
+update msg myModel =
+    case msg of
+        Name name ->
+            { myModel | name = name }
+
+        Password password ->
+            { myModel | password = password }
+
+        PwAgain pwAgain ->
+            { myModel | pwAgain = pwAgain }
+
+        Age age ->
+            { myModel | age = age }
+
+        Check ->
+            { myModel | valid = validate myModel }
+
+
+validate : Model -> Validation
+validate myModel =
+    if myModel.password /= myModel.pwAgain then
+        Error "Passwords don't match"
+
+    else if String.length myModel.password < 8 then
+        Error "Password must be 8 characters or more"
+
+    else if not (String.any isDigit myModel.password) then
+        Error "Password must contain digits"
+
+    else if not (String.any isUpper myModel.password) then
+        Error "Password must contain uppercase"
+
+    else if not (String.any isLower myModel.password) then
+        Error "Password must contain lowercase"
+
+    else if String.length myModel.age == 0 then
+        Error "Enter age"
+
+    else if not (String.all isDigit myModel.age) then
+        Error "Age must be a number"
+
+    else
+        Ok
+
+
+view : Model -> Html Msg
+view myModel =
+    div []
+        [ input [ type_ "text", placeholder "Name", onInput Name ] []
+        , input [ type_ "password", placeholder "Password", onInput Password ] []
+        , input [ type_ "password", placeholder "Re-enter Password", onInput PwAgain ] []
+        , input [ type_ "text", placeholder "Age", onInput Age ] []
+        , button [ onClick Check ] [ text "Submit" ]
+        , viewValidation myModel
+        ]
+
+
+viewValidation : Model -> Html Msg
+viewValidation myModel =
+    let
+        ( color, message ) =
+            case myModel.valid of
+                Ok ->
+                    ( "green", "OK" )
+
+                Error err ->
+                    ( "red", err )
+
+                None ->
+                    ( "black", "Enter your details" )
+    in
+    div [ style "color" color ] [ text message ]
